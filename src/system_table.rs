@@ -1,9 +1,6 @@
 use core::num::ParseIntError;
 
-use version::Version;
-
 pub const EFI_SYSTEM_TABLE_SIGNATURE: u64 = 0x5453595320494249;
-
 
 #[repr(transparent)]
 pub struct Revision {
@@ -14,6 +11,12 @@ impl Revision {
         Revision {
             val: major << 16 | (minor & 0xff),
         }
+    }
+    pub fn minor(&self) -> u32 {
+        self.val & 0xff
+    }
+    pub fn major(&self) -> u32 {
+        (self.val >> 16) & 0xff
     }
 }
 impl std::str::FromStr for Revision {
@@ -31,15 +34,6 @@ impl std::str::FromStr for Revision {
         Ok(Revision {
             val: major << 16 | minor,
         })
-    }
-}
-
-impl Version for Revision {
-    fn minor(&self) -> u32 {
-        self.val & 0xff
-    }
-    fn major(&self) -> u32 {
-        (self.val >> 16) & 0xff
     }
 }
 
@@ -62,7 +56,7 @@ impl Default for EfiTableHeader {
 mod test {
     use std::{num::ParseIntError, str::FromStr};
 
-    use super::{Revision, Version};
+    use super::Revision;
 
     #[test]
     fn revision_test() -> Result<(), ParseIntError> {
